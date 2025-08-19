@@ -18,7 +18,7 @@
 
 To run the project, type this:
 ```bash
-poetry run dev main.py
+ cd src/t1_construcao && poetry run fastapi dev main.py
 ```
 
 ## Running Tests
