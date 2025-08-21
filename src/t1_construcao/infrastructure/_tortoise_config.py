@@ -1,4 +1,4 @@
-from ..shared import get_env_var
+from t1_construcao.shared import get_env_var
 
 __all__ = ["TORTOISE_ORM"]
 
