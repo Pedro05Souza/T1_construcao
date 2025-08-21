@@ -24,6 +24,8 @@ packages = [{include = "t1_construcao", from = "src"}]
 black = "^25.1.0"
 pylint = "^3.3.7"
 pyright = "^1.1.403"
+pytest = "^8.4.1"
+pytest-asyncio = "^1.1.0"
 
 [tool.pyright]
 include = ["src", "tests"]
@@ -54,3 +56,18 @@ build-backend = "poetry.core.masonry.api"
 tortoise_orm = "src.t1_construcao.infrastructure._tortoise_config.TORTOISE_ORM"
 location = "./src/t1_construcao/infrastructure/migrations"
 src_folder = "./."
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q --strict-markers --strict-config"
+testpaths = ["tests"]
+pythonpath = ["src"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests",
+]
+asyncio_mode = "auto"
