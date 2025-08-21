@@ -28,11 +28,6 @@ To run tests:
 poetry run pytest
 ```
 
-Or with the shell activated:
-```bash
-pytest
-```
-
 ## Development
 
 To add new dependencies:
