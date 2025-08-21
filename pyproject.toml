@@ -52,5 +52,5 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.aerich]
 tortoise_orm = "src.t1_construcao.infrastructure._tortoise_config.TORTOISE_ORM"
-location = "./migrations"
+location = "./src/t1_construcao/infrastructure/migrations"
 src_folder = "./."

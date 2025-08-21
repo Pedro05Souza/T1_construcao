@@ -5,5 +5,4 @@ __all__ = ["UserEntity"]
 
 @dataclass
 class UserEntity(BaseEntity):
-    id: str
     name: str
