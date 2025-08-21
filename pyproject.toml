@@ -71,3 +71,32 @@ markers = [
     "unit: marks tests as unit tests",
 ]
 asyncio_mode = "auto"
+
+[tool.pylint.messages_control]
+disable = [
+    "missing-module-docstring",
+    "missing-class-docstring", 
+    "missing-function-docstring",
+    "too-few-public-methods",
+    "unnecessary-ellipsis",
+    "duplicate-code",
+]
+
+[tool.pylint.master]
+ignore-paths = [
+    "src/t1_construcao/infrastructure/migrations",
+    ".*/__pycache__/.*",
+    ".*/migrations/.*"
+]
+
+[tool.pylint.format]
+max-line-length = 100
+
+[tool.pylint.basic]
+good-names = ["i", "j", "k", "ex", "Run", "_", "id", "db"]
+
+[tool.pylint.design]
+max-args = 10
+max-locals = 20
+max-returns = 6
+max-branches = 15

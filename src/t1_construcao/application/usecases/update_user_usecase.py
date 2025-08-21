@@ -7,7 +7,12 @@ __all__ = ["UpdateUserUsecase"]
 
 class UpdateUserUsecase:
 
-    def __init__(self, user_id: str, update_user_dto: UpdateUserDto, user_repository: UserRepository):
+    def __init__(
+        self,
+        user_id: str,
+        update_user_dto: UpdateUserDto,
+        user_repository: UserRepository,
+    ):
         self._update_user_dto = update_user_dto
         self._user_repository = user_repository
         self._user_id = user_id

@@ -7,6 +7,7 @@ if TYPE_CHECKING:
 
 __all__ = ["UserRepository"]
 
+
 @runtime_checkable
 class UserRepository(Protocol):
     async def create(self, name: str) -> "UserEntity":

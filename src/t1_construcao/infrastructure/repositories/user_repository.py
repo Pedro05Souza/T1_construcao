@@ -1,5 +1,5 @@
-from ._repository_meta import RepositoryMeta
 from t1_construcao.domain import UserEntity
+from ._repository_meta import RepositoryMeta
 from ..models import User
 from .mappers import user_model_to_entity
 

@@ -3,6 +3,7 @@ from t1_construcao.domain.entities import UserEntity
 
 __all__ = ["to_user_dto"]
 
+
 def to_user_dto(user_entity: UserEntity) -> UserResponseDto:
     """
     Converts a user entity to a UserResponseDto.
