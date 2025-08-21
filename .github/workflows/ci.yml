@@ -69,5 +69,4 @@ jobs:
         DATABASE_PASSWORD: test_password
       run: |
         make docker-run
-        # Add integration tests here
         make docker-stop
