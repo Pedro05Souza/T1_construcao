@@ -14,11 +14,27 @@
    poetry install
    ```
 
+## Database Setup (Required before first run)
+
+Before running the project for the first time, you need to set up the database migrations with aerich:
+
+1. Make sure you have a `.env` file with your `DATABASE_URL` configured
+2. Initialize aerich (if not already done):
+   ```bash
+   poetry run aerich init-db
+   ```
+3. If there are pending migrations, apply them:
+   ```bash
+   poetry run aerich upgrade
+   ```
+
+**Note:** The aerich configuration is already set up in `pyproject.toml`. You only need to run these commands once or when there are new migrations.
+
 ## Running the Project
 
 To run the project, type this:
 ```bash
- cd src/t1_construcao && poetry run fastapi dev main.py
+ docker compose up
 ```
 
 ## Running Tests
