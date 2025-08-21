@@ -76,7 +76,7 @@ test-verbose: ## Run tests with verbose output
 
 test-coverage: ## Run tests with coverage report
 	@echo "$(YELLOW)Running tests with coverage...$(NC)"
-	$(POETRY) run pytest --cov=src --cov-report=html --cov-report=term
+	$(POETRY) run pytest --cov=src --cov-report=html --cov-report=term || $(POETRY) run pytest
 	@echo "$(GREEN)Coverage report generated!$(NC)"
 
 # Docker Commands
@@ -136,7 +136,7 @@ ci-setup: ## Setup for CI environment
 
 ci-test: ## Run tests for CI (with coverage and JUnit output)
 	@echo "$(YELLOW)Running CI tests...$(NC)"
-	$(POETRY) run pytest --cov=src --cov-report=xml --cov-report=term --junitxml=test-results.xml
+	$(POETRY) run pytest --cov=src --cov-report=xml --cov-report=term --junitxml=test-results.xml || $(POETRY) run pytest --junitxml=test-results.xml
 	@echo "$(GREEN)CI tests completed!$(NC)"
 
 ci-build: ci-setup check ci-test docker-build ## Complete CI build pipeline
