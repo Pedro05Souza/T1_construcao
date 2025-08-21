@@ -17,25 +17,31 @@ help:
 
 install:
 	@echo "$(YELLOW)Installing dependencies...$(NC)"
+	cp .env.template .env || true
 	$(POETRY) install
 	@echo "$(GREEN)Dependencies installed successfully!$(NC)"
 
 db-setup:
 	@echo "$(YELLOW)Setting up database...$(NC)"
-	$(POETRY) run aerich init-db
-	$(POETRY) run aerich upgrade
+	@if [ ! -d "src/t1_construcao/infrastructure/migrations" ]; then \
+		echo "$(YELLOW)Initializing database...$(NC)"; \
+		$(DOCKER_COMPOSE) exec backend poetry run aerich init-db; \
+	else \
+		echo "$(BLUE)Migrations folder exists, skipping init-db...$(NC)"; \
+	fi
+	$(DOCKER_COMPOSE) exec backend poetry run aerich upgrade
 	@echo "$(GREEN)Database setup complete!$(NC)"
 
 db-migrate:
 	@echo "$(YELLOW)Generating migrations...$(NC)"
-	$(POETRY) run aerich migrate
-	$(POETRY) run aerich upgrade
+	$(DOCKER_COMPOSE) exec backend poetry run aerich migrate
+	$(DOCKER_COMPOSE) exec backend poetry run aerich upgrade
 	@echo "$(GREEN)Migrations applied successfully!$(NC)"
 
 db-reset:
 	@echo "$(RED)WARNING: This will reset the database and delete all data!$(NC)"
 	@read -p "Are you sure? (y/N): " confirm && [ "$$confirm" = "y" ] || exit 1
-	$(POETRY) run aerich reset
+	$(DOCKER_COMPOSE) exec backend poetry run aerich reset
 	@echo "$(GREEN)Database reset complete!$(NC)"
 
 lint:
@@ -139,5 +145,6 @@ clean:
 
 all: build
 
-fresh-start: clean install db-setup test docker-build
+fresh-start: clean docker-build docker-run db-setup
+	@echo "$(GREEN)Fresh start complete!$(NC)"
 

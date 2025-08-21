@@ -71,6 +71,8 @@ def user_response_dto():
 
 
 @pytest.fixture
-async def repository_with_user(mock_user_repository): #pylint: disable=redefined-outer-name
+async def repository_with_user(
+    mock_user_repository,
+):  # pylint: disable=redefined-outer-name
     user = await mock_user_repository.create("Existing User")
     return mock_user_repository, user
