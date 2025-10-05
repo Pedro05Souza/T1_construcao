@@ -1,5 +1,3 @@
-# infra/main.tf
-
 terraform {
   required_providers {
     aws = {
@@ -52,18 +50,25 @@ resource "aws_instance" "app_server" {
     Name = "T1-App-Server"
   }
 
-    user_data = <<-EOF
+  user_data = <<-EOF
     #!/bin/bash
     sudo apt update
     sudo apt install -y git curl python3.12 python3.12-venv python3.12-dev python3-pip docker.io
     sudo curl -L "https://github.com/docker/compose/releases/download/v2.23.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
     sudo chmod +x /usr/local/bin/docker-compose
+    sudo usermod -aG docker ubuntu
+    export PATH="$HOME/.local/bin:$PATH"
     curl -sSL https://install.python-poetry.org | python3.12 -
     cd /home/ubuntu
-    git clone https://github.com/Pedro05Souza/T1_construcao.git
-    cd T1_construcao
+    if [ -d "T1_construcao" ]; then
+      cd T1_construcao
+      git pull
+    else
+      git clone https://github.com/Pedro05Souza/T1_construcao.git
+      cd T1_construcao
+    fi
     cp .env.template .env || true
     /home/ubuntu/.local/bin/poetry install
-    docker compose up -d
+    sudo docker compose up -d
   EOF
 }
