@@ -185,3 +185,7 @@ logs/
 *.temp
 .tmp/
 .temp/
+
+# Terraform
+.terraform/
+.terraform.lock.hcl
