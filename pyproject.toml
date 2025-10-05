@@ -1,32 +1,32 @@
-[project]
+[tool.poetry]
 name = "t1-construcao"
 version = "0.1.0"
-description = ""
-authors = [
-    {name = "Pedro"}
-]
-readme = "README.md"
-requires-python = ">=3.12"
-dependencies = [
-    "msgspec (>=0.19.0,<0.20.0)",
-    "fastapi[standard] (>=0.116.1,<0.117.0)",
-    "tortoise-orm (>=0.25.1,<0.26.0)",
-    "aerich (>=0.9.1,<0.10.0)",
-    "asyncpg (>=0.30.0,<0.31.0)",
-    "python-dotenv (>=1.1.1,<2.0.0)"
-]
+description = "Trabalho 1 de Construção de Software"
+authors = ["Pedro <seuemail@exemplo.com>"]
+packages = [{ include = "t1_construcao", from = "src" }]
 
-[tool.poetry]
-packages = [{include = "t1_construcao", from = "src"}]
+[tool.poetry.dependencies]
+python = ">=3.12"
+msgspec = ">=0.19.0,<0.20.0"
+fastapi = { version = ">=0.116.1,<0.117.0", extras = ["standard"] }
+tortoise-orm = ">=0.25.1,<0.26.0"
+aerich = ">=0.9.1,<0.10.0"
+asyncpg = ">=0.30.0,<0.31.0"
+python-dotenv = ">=1.1.1,<2.0.0"
 
-
-[tool.poetry.group.dev.dependencies]
+[tool.poetry.dev-dependencies]
 black = "^25.1.0"
 pylint = "^3.3.7"
 pyright = "^1.1.403"
 pytest = "^8.4.1"
 pytest-asyncio = "^1.1.0"
 pytest-cov = "^6.0.0"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+# ---- Configurações extras ----
 
 [tool.pyright]
 include = ["src", "tests"]
@@ -49,10 +49,6 @@ reportIncompatibleVariableOverride = "none"
 pythonVersion = "3.12"
 pythonPlatform = "Linux"
 
-[build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
-build-backend = "poetry.core.masonry.api"
-
 [tool.aerich]
 tortoise_orm = "src.t1_construcao.infrastructure._tortoise_config.TORTOISE_ORM"
 location = "./src/t1_construcao/infrastructure/migrations"
@@ -69,18 +65,18 @@ python_functions = ["test_*"]
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
     "integration: marks tests as integration tests",
-    "unit: marks tests as unit tests",
+    "unit: marks tests as unit tests"
 ]
 asyncio_mode = "auto"
 
 [tool.pylint.messages_control]
 disable = [
     "missing-module-docstring",
-    "missing-class-docstring", 
+    "missing-class-docstring",
     "missing-function-docstring",
     "too-few-public-methods",
     "unnecessary-ellipsis",
-    "duplicate-code",
+    "duplicate-code"
 ]
 
 [tool.pylint.master]
