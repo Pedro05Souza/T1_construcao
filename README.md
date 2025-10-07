@@ -96,3 +96,55 @@ The CI pipeline uses these Makefile commands:
 - `make ci-build` - Complete CI build pipeline
 - `make ci-test` - Run tests with coverage and JUnit output
 - `make docker-build` - Build Docker images
+
+## Infrastructure with Terraform
+
+This project uses **Terraform** to automatically create and manage AWS infrastructure (such as EC2 instances and security groups).
+
+### Prerequisites
+
+- [Terraform](https://developer.hashicorp.com/terraform/downloads)
+- Configured AWS credentials (Access Key and Secret Key)
+---
+
+### AWS CLI Setup
+
+Before using Terraform, export your AWS credentials or configure them using `aws configure`.
+```bash
+export AWS_ACCESS_KEY_ID="your_access_key"
+export AWS_SECRET_ACCESS_KEY="your_secret_key"
+export AWS_DEFAULT_REGION="us-east-1"
+```
+---
+
+### Initializing Terraform
+
+In the `infra/` directory, to download the required providers (such as AWS) and set up the environment, run:
+```bash
+terraform init
+```
+
+---
+
+### Creating the Infrastructure
+
+To apply the configuration and create the resources, run:
+```bash
+terraform apply
+```
+> Confirm by typing `yes` when prompted.
+
+Terraform will create the EC2 instance and display its public IP address at the end of the process.
+
+---
+
+### 🧹 Destroying the Infrastructure
+
+When you want to **delete all created resources**, run:
+```bash
+terraform destroy
+```
+> Confirm with `yes` to remove the resources from AWS.
+
+---
+
