@@ -1,47 +1,43 @@
-FROM python:3.12-slim AS builder
+FROM python:3.12-slim-bullseye AS builder
 
 RUN apt-get update && apt-get install -y \
-    curl \
     build-essential \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install poetry
 
 ENV POETRY_NO_INTERACTION=1 \
-    POETRY_VENV_IN_PROJECT=1 \
+    POETRY_VIRTUALENVS_IN_PROJECT=false \
+    POETRY_VIRTUALENVS_PATH=/opt/poetry-venvs \
     POETRY_CACHE_DIR=/opt/poetry-cache
 
 WORKDIR /app
 
 COPY pyproject.toml poetry.lock* ./
+RUN poetry install --only main --no-root
 
-RUN poetry install --without dev --no-root
 
-FROM python:3.12-slim AS production
+FROM python:3.12-slim-bullseye AS production
 
-# Install Poetry in production stage
-RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
-RUN pip install poetry
+RUN pip install --upgrade pip poetry
 
 ENV POETRY_NO_INTERACTION=1 \
-    POETRY_VENV_IN_PROJECT=1 \
-    POETRY_CACHE_DIR=/opt/poetry-cache
+    POETRY_VIRTUALENVS_IN_PROJECT=false \
+    POETRY_VIRTUALENVS_PATH=/opt/poetry-venvs
 
-COPY --from=builder /opt/poetry-cache/virtualenvs /opt/poetry-cache/virtualenvs
-
-ENV PATH="/opt/poetry-cache/virtualenvs/t1-construcao-9TtSrW0h-py3.12/bin:$PATH"
+RUN useradd --create-home --shell /bin/bash appuser
 
 WORKDIR /app
 
-# Copy application code
+ENV PYTHONPATH="/app/src"
+
+COPY --from=builder /opt/poetry-venvs /opt/poetry-venvs
 COPY src/ ./src/
 
-# Set PYTHONPATH to include the src directory
-ENV PYTHONPATH="/app/src:$PYTHONPATH"
-
-# Set working directory to the correct location
-WORKDIR /app
+RUN chown -R appuser:appuser /app
+USER appuser
 
 EXPOSE 8000
 
-CMD ["fastapi", "dev", "src/t1_construcao/main.py", "--host", "0.0.0.0"]
+CMD ["poetry", "run", "uvicorn", "t1_construcao.main:app", "--host", "0.0.0.0", "--port", "8000"]
