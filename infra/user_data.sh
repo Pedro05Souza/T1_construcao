@@ -18,11 +18,7 @@ git clone ${git_repo_url} /home/ubuntu/app
 cd /home/ubuntu/app
 
 cat > .env <<EOF
-DATABASE_HOST="${db_host}"
-DATABASE_USER="${db_user}"
-DATABASE_PASSWORD="${db_password}"
-DATABASE_PORT="5432"
-DATABASE_NAME="${db_name}"
+DATABASE_URL="postgres://${db_user}:${db_password}@${db_host}:5432/${db_name}"
 
 S3_BUCKET_NAME="${s3_bucket_name}"
 AWS_REGION="${aws_region}"
