@@ -26,7 +26,7 @@ jobs:
           --health-retries 5
 
     env:
-      DATABASE_URL: postgresql://test_user:test_password@localhost:5432/test_db
+      DATABASE_URL: postgres://test_user:test_password@localhost:5432/test_db
       DATABASE_USER: test_user
       DATABASE_PASSWORD: test_password
       JWT_ISSUER: "https://fake-issuer.com"
@@ -72,7 +72,7 @@ jobs:
           --health-retries 5
           
     env:
-      DATABASE_URL: postgresql://test_user:test_password@localhost:5432/test_db
+      DATABASE_URL: postgres://test_user:test_password@localhost:5432/test_db
       DATABASE_USER: test_user
       DATABASE_PASSWORD: test_password
       JWT_ISSUER: "https://fake-issuer.com"
