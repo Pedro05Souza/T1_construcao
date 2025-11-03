@@ -6,7 +6,6 @@ from t1_construcao.main import app # Importe a sua app FastAPI
 # NOVO: Importe as dependências REAIS que você quer substituir
 from t1_construcao.shared.auth import (
     get_admin_user, 
-    check_admin_or_self,
     get_current_user_payload
 )
 

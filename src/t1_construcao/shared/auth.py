@@ -10,7 +10,7 @@ try:
     COGNITO_AUDIENCE = os.environ["JWT_AUDIENCE"]
     JWKS_URI = f"{COGNITO_ISSUER}/.well-known/jwks.json"
 except KeyError as e:
-    raise RuntimeError(f"Variável de ambiente {e} não definida. Verifique o seu ficheiro .env")
+    raise RuntimeError(f"Variável de ambiente {e} não definida. Verifique o seu ficheiro .env") from e
 
 
 try:
@@ -34,8 +34,8 @@ def validate_token(token: str) -> dict:
     try:
         headers = jwt.get_unverified_headers(token)
         kid = headers["kid"]
-    except Exception:
-        raise HTTPException(status_code=HTTP_401_UNAUTHORIZED, detail="Cabeçalho do token inválido")
+    except Exception as e:
+        raise HTTPException(status_code=HTTP_401_UNAUTHORIZED, detail="Cabeçalho do token inválido") from e
 
     key = next((k for k in jwks if k["kid"] == kid), None)
     if not key:
@@ -47,17 +47,17 @@ def validate_token(token: str) -> dict:
         payload = jwt.decode(
             token,
             public_key.to_pem(),
-            algorithms=["RS260"],
+            algorithms=["RS256"],
             issuer=COGNITO_ISSUER,
             audience=COGNITO_AUDIENCE
         )
         return payload
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=HTTP_401_UNAUTHORIZED, detail="Token expirado")
+    except jwt.ExpiredSignatureError as e:
+        raise HTTPException(status_code=HTTP_401_UNAUTHORIZED, detail="Token expirado") from e
     except jwt.JWTClaimsError as e:
-        raise HTTPException(status_code=HTTP_401_UNAUTHORIZED, detail=f"Claims inválidas: {e}")
+        raise HTTPException(status_code=HTTP_401_UNAUTHORIZED, detail=f"Claims inválidas: {e}") from e
     except Exception as e:
-        raise HTTPException(status_code=HTTP_401_UNAUTHORIZED, detail=f"Erro desconhecido na validação do token: {e}")
+        raise HTTPException(status_code=HTTP_401_UNAUTHORIZED, detail=f"Erro desconhecido na validação do token: {e}") from e
 
 def get_current_user_payload(creds: HTTPAuthorizationCredentials = Security(security_scheme)) -> dict:
     """
