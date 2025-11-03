@@ -91,4 +91,5 @@ jobs:
     - name: Run integration tests
       run: |
         make docker-run IMAGE_NAME=$DOCKER_IMAGE_NAME
+        sleep 20
         make docker-stop IMAGE_NAME=$DOCKER_IMAGE_NAME
