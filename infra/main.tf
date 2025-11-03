@@ -48,6 +48,8 @@ resource "aws_instance" "app_server" {
     db_name         = aws_db_instance.postgres_db.db_name
     s3_bucket_name  = var.s3_bucket_name
     aws_region      = "us-east-1"
+    jwt_issuer     = aws_cognito_user_pool.user_pool.endpoint
+    jwt_audience   = aws_cognito_user_pool_client.app_client.id
   })
   
   tags = {
@@ -149,6 +151,53 @@ resource "aws_s3_bucket_public_access_block" "app_bucket_pab" {
   restrict_public_buckets = true
 }
 
+variable "cognito_domain_prefix" {
+  description = "Prefixo de domínio globalmente único para o Cognito Hosted UI (ex: t1-construcao-app-123)"
+  type        = string
+}
+
+resource "aws_cognito_user_pool" "user_pool" {
+  name = "t1-app-user-pool"
+  auto_verified_attributes = ["email"]
+
+  tags = {
+    Name = "T1-User-Pool"
+  }
+}
+
+resource "aws_cognito_user_group" "admin_group" {
+  name         = "admin"
+  user_pool_id = aws_cognito_user_pool.user_pool.id
+  description  = "Grupo de administradores"
+}
+
+resource "aws_cognito_user_group" "user_group" {
+  name         = "user"
+  user_pool_id = aws_cognito_user_pool.user_pool.id
+  description  = "Grupo de utilizadores padrão"
+}
+
+resource "aws_cognito_user_pool_client" "app_client" {
+  name = "t1-app-client"
+  user_pool_id = aws_cognito_user_pool.user_pool.id
+
+  allowed_oauth_flows_user_pool_client = true
+  allowed_oauth_flows           = ["code"]
+  allowed_oauth_scopes          = ["openid", "email", "profile"]
+
+  callback_urls = ["http://localhost:8000/token"]
+  logout_urls   = ["http://localhost:8000"]
+
+  supported_identity_providers = ["COGNITO"]
+
+  generate_secret = false
+}
+
+resource "aws_cognito_user_pool_domain" "app_domain" {
+  domain       = var.cognito_domain_prefix
+  user_pool_id = aws_cognito_user_pool.user_pool.id
+}
+
 output "app_server_public_ip" {
   description = "O IP público da instância da aplicação."
   value       = aws_instance.app_server.public_ip
@@ -164,3 +213,18 @@ output "s3_bucket_name" {
   value       = aws_s3_bucket.app_bucket.id
 }
 
+output "cognito_issuer_url" {
+  description = "A URL do Issuer para o JWT (usar como JWT_ISSUER no .env)"
+  # O 'endpoint' já vem no formato: https://cognito-idp.[regiao].amazonaws.com/[pool_id]
+  value       = aws_cognito_user_pool.user_pool.endpoint
+}
+
+output "cognito_app_client_id" {
+  description = "O ID do App Client para o JWT (usar como JWT_AUDIENCE no .env)"
+  value       = aws_cognito_user_pool_client.app_client.id
+}
+
+output "cognito_hosted_ui_url" {
+  description = "URL da página de login (Hosted UI) para gerar tokens de teste"
+  value       = "https://${aws_cognito_user_pool_domain.app_domain.domain}.auth.us-east-1.amazoncognito.com"
+}

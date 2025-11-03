@@ -20,6 +20,8 @@ cd /home/ubuntu/app
 cat > .env <<EOF
 DATABASE_URL="postgres://${db_user}:${db_password}@${db_host}:5432/${db_name}"
 
+JWT_ISSUER="${jwt_issuer}"
+JWT_AUDIENCE="${jwt_audience}"
 S3_BUCKET_NAME="${s3_bucket_name}"
 AWS_REGION="${aws_region}"
 PYTHONUNBUFFERED=1
