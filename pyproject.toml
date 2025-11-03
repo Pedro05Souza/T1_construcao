@@ -72,6 +72,11 @@ markers = [
 ]
 asyncio_mode = "auto"
 
+[tool.pylint."messages control"]
+disable = [
+    "redefined-outer-name",
+]
+
 [tool.pylint.messages_control]
 disable = [
     "missing-module-docstring",
