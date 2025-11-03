@@ -1,9 +1,9 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from t1_construcao.infrastructure import DatabaseStarterService
-from t1_construcao.controllers.user_controller import user_router
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
+from t1_construcao.infrastructure import DatabaseStarterService
+from t1_construcao.controllers.user_controller import user_router
 
 db_service = DatabaseStarterService()
 

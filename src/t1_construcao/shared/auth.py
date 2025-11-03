@@ -1,36 +1,26 @@
-# src/t1_construcao/shared/auth.py
-
 import os
 import requests
 from jose import jwk, jwt
-from jose.utils import base64url_decode
 from fastapi import HTTPException, Security, Depends, Path
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from starlette.status import HTTP_401_UNAUTHORIZED, HTTP_403_FORBIDDEN
 
-# --- Configuração (Virá do .env) ---
-# Certifique-se de que estas variáveis de ambiente estão definidas
 try:
     COGNITO_ISSUER = os.environ["JWT_ISSUER"]
-    COGNITO_AUDIENCE = os.environ["JWT_AUDIENCE"] # O seu App Client ID
+    COGNITO_AUDIENCE = os.environ["JWT_AUDIENCE"]
     JWKS_URI = f"{COGNITO_ISSUER}/.well-known/jwks.json"
 except KeyError as e:
     raise RuntimeError(f"Variável de ambiente {e} não definida. Verifique o seu ficheiro .env")
 
 
-# --- Cache do JWKS ---
-# Em produção, isto deve ter um TTL (cache com tempo de expiração)
-# Para a atividade, baixar uma vez no arranque é suficiente.
 try:
-    jwks_response = requests.get(JWKS_URI)
-    jwks_response.raise_for_status() # Lança erro se o request falhar
+    jwks_response = requests.get(JWKS_URI, timeout=10)
+    jwks_response.raise_for_status()
     jwks = jwks_response.json()["keys"]
 except requests.exceptions.RequestException as e:
     print(f"ERRO CRÍTICO: Não foi possível buscar o JWKS em {JWKS_URI}. {e}")
-    jwks = [] # A app vai falhar a validação de todos os tokens
+    jwks = []
 
-
-# --- Esquema de Segurança ---
 security_scheme = HTTPBearer(
     description="Insira o Access Token (JWT) fornecido pelo Cognito/Auth0."
 )
@@ -47,22 +37,19 @@ def validate_token(token: str) -> dict:
     except Exception:
         raise HTTPException(status_code=HTTP_401_UNAUTHORIZED, detail="Cabeçalho do token inválido")
 
-    # Encontra a chave pública correta no JWKS
     key = next((k for k in jwks if k["kid"] == kid), None)
     if not key:
         raise HTTPException(status_code=HTTP_401_UNAUTHORIZED, detail="Chave pública (JWKS) não encontrada para o kid")
 
     try:
-        # Constrói a chave pública RSA
         public_key = jwk.construct(key)
         
-        # Decodifica e VALIDA a assinatura e as claims
         payload = jwt.decode(
             token,
             public_key.to_pem(),
-            algorithms=["RS260"], # Algoritmo usado pelo Cognito
+            algorithms=["RS260"],
             issuer=COGNITO_ISSUER,
-            audience=COGNITO_AUDIENCE # Valida o 'aud' (App Client ID)
+            audience=COGNITO_AUDIENCE
         )
         return payload
     except jwt.ExpiredSignatureError:
@@ -71,8 +58,6 @@ def validate_token(token: str) -> dict:
         raise HTTPException(status_code=HTTP_401_UNAUTHORIZED, detail=f"Claims inválidas: {e}")
     except Exception as e:
         raise HTTPException(status_code=HTTP_401_UNAUTHORIZED, detail=f"Erro desconhecido na validação do token: {e}")
-
-# --- Dependências do FastAPI (para injetar nas rotas) ---
 
 def get_current_user_payload(creds: HTTPAuthorizationCredentials = Security(security_scheme)) -> dict:
     """
@@ -107,10 +92,8 @@ def check_admin_or_self(
     """
     user_groups = payload.get("cognito:groups", [])
     
-    # 'sub' é o ID universal único do utilizador dentro do Cognito User Pool
     user_sub_id = payload.get("sub") 
 
-    # Permite se for admin OU se o ID do token for o mesmo da URL
     if "admin" in user_groups or user_sub_id == user_id:
         return payload
     

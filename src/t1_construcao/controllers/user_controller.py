@@ -11,7 +11,6 @@ from t1_construcao.application.dtos import CreateUserDto, UserResponseDto, Updat
 from ..shared.auth import (
     get_admin_user,
     check_admin_or_self,
-    get_current_user_payload
 )
 
 user_router = APIRouter(prefix="/users", tags=["users"])
@@ -23,7 +22,7 @@ def get_repository():
 
 @user_router.get("/", response_model=list[UserResponseDto])
 async def list_users(
-    repo: UserRepository = Depends(get_repository),
+    _repo: UserRepository = Depends(get_repository),
     admin_payload: dict = Depends(get_admin_user)
 ):
     """
@@ -42,7 +41,7 @@ async def list_users(
 async def create_user(
     create_user_dto: CreateUserDto,
     repo: UserRepository = Depends(get_repository),
-    admin_payload: dict = Depends(get_admin_user) # NOVO: Protegido
+    _admin_payload: dict = Depends(get_admin_user)
 ) -> UserResponseDto:
     """
     Cria um novo utilizador.
@@ -57,7 +56,7 @@ async def update_user(
     user_id: str, 
     update_user_dto: UpdateUserDto,
     repo: UserRepository = Depends(get_repository),
-    auth_payload: dict = Depends(check_admin_or_self) 
+    _auth_payload: dict = Depends(check_admin_or_self) 
 ) -> UserResponseDto:
     """
     Atualiza um utilizador.
@@ -71,7 +70,7 @@ async def update_user(
 async def delete_user(
     user_id: str,
     repo: UserRepository = Depends(get_repository),
-    admin_payload: dict = Depends(get_admin_user)
+    _admin_payload: dict = Depends(get_admin_user)
 ) -> None:
     """
     Apaga um utilizador.
@@ -85,7 +84,7 @@ async def delete_user(
 async def get_user_by_id(
     user_id: str, 
     repo: UserRepository = Depends(get_repository),
-    auth_payload: dict = Depends(check_admin_or_self)
+    _auth_payload: dict = Depends(check_admin_or_self)
 ) -> UserResponseDto | None:
     """
     Obtém um utilizador pelo seu ID.
