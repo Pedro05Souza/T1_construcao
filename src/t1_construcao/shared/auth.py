@@ -1,6 +1,7 @@
 import os
 import requests
 from jose import jwk, jwt
+from jose.exceptions import ExpiredSignatureError, JWTClaimsError
 from fastapi import HTTPException, Security, Depends, Path
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from starlette.status import HTTP_401_UNAUTHORIZED, HTTP_403_FORBIDDEN
@@ -52,9 +53,9 @@ def validate_token(token: str) -> dict:
             audience=COGNITO_AUDIENCE
         )
         return payload
-    except jwt.ExpiredSignatureError as e:
+    except ExpiredSignatureError as e:
         raise HTTPException(status_code=HTTP_401_UNAUTHORIZED, detail="Token expirado") from e
-    except jwt.JWTClaimsError as e:
+    except JWTClaimsError as e:
         raise HTTPException(status_code=HTTP_401_UNAUTHORIZED, detail=f"Claims inválidas: {e}") from e
     except Exception as e:
         raise HTTPException(status_code=HTTP_401_UNAUTHORIZED, detail=f"Erro desconhecido na validação do token: {e}") from e
