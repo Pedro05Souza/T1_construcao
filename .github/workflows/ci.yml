@@ -90,6 +90,12 @@ jobs:
 
     - name: Run integration tests
       run: |
+        echo "DATABASE_URL=${DATABASE_URL}" >> .env
+        echo "DATABASE_USER=${DATABASE_USER}" >> .env
+        echo "DATABASE_PASSWORD=${DATABASE_PASSWORD}" >> .env
+        echo "JWT_ISSUER=${JWT_ISSUER}" >> .env
+        echo "JWT_AUDIENCE=${JWT_AUDIENCE}" >> .env
+        echo "PYTHONUNBUFFERED=1" >> .env
+        echo "PYTHONPATH=/app/src" >> .env
         make docker-run IMAGE_NAME=$DOCKER_IMAGE_NAME
-        sleep 20
         make docker-stop IMAGE_NAME=$DOCKER_IMAGE_NAME
