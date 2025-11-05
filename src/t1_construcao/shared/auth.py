@@ -11,7 +11,7 @@ try:
     COGNITO_AUDIENCE = os.environ["JWT_AUDIENCE"]
     JWKS_URI = f"{COGNITO_ISSUER}/.well-known/jwks.json"
 except KeyError as e:
-    raise RuntimeError(f"Variável de ambiente {e} não definida. Verifique o seu ficheiro .env") from e
+    raise RuntimeError(f"Variável de ambiente {e} não definida. Verifique a .env") from e
 
 
 try:
@@ -19,7 +19,6 @@ try:
     jwks_response.raise_for_status()
     jwks = jwks_response.json()["keys"]
 except requests.exceptions.RequestException as e:
-    print(f"ERRO CRÍTICO: Não foi possível buscar o JWKS em {JWKS_URI}. {e}")
     jwks = []
 
 security_scheme = HTTPBearer(
@@ -28,7 +27,6 @@ security_scheme = HTTPBearer(
 
 
 def validate_token(token: str) -> dict:
-    """Valida o token JWT (assinatura, claims) usando o JWKS do Cognito."""
     if not jwks:
         raise HTTPException(status_code=HTTP_401_UNAUTHORIZED, detail="JWKS não disponível, validação falhou")
         
@@ -71,7 +69,7 @@ def get_current_user_payload(creds: HTTPAuthorizationCredentials = Security(secu
 
 def get_admin_user(payload: dict = Depends(get_current_user_payload)) -> dict:
     """
-    Dependência de Admin: Exige um token válido E que o usuário
+    Dependência de Admin: Exige um token válido e que o usuário
     esteja no grupo 'admin'.
     """
     groups = payload.get("cognito:groups", [])
@@ -88,8 +86,8 @@ def check_admin_or_self(
 ) -> dict:
     """
     Dependência de Autorização (RBAC):
-    Verifica se o utilizador é 'admin' OU se é o próprio utilizador (self).
-    Compara o 'sub' (ID do utilizador no token) com o 'user_id' da URL.
+    Verifica se o user é 'admin' ou se é o próprio user (self).
+    Compara o 'sub' (ID do user no token) com o 'user_id' da URL.
     """
     user_groups = payload.get("cognito:groups", [])
     
@@ -100,5 +98,5 @@ def check_admin_or_self(
     
     raise HTTPException(
         status_code=HTTP_403_FORBIDDEN, 
-        detail="Acesso permitido apenas para admin ou o próprio utilizador"
+        detail="Acesso permitido apenas para admin ou o próprio user"
     )

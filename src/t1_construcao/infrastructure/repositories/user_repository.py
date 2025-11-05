@@ -31,3 +31,7 @@ class UserRepository(metaclass=RepositoryMeta):
         if not user:
             raise ValueError("User not found")
         return None
+    
+    async def get_all(self) -> list[UserEntity]:
+        users = await User.all()
+        return [user_model_to_entity(user) for user in users]

@@ -4,6 +4,7 @@ from t1_construcao.application.usecases import (
     UpdateUserUsecase,
     GetUserByIdUsecase,
     DeleteUserUsecase,
+    GetUsersListUsecase,
 )
 from t1_construcao.infrastructure import UserRepository
 from t1_construcao.application.dtos import CreateUserDto, UserResponseDto, UpdateUserDto
@@ -24,18 +25,13 @@ def get_repository():
 async def list_users(
     _repo: UserRepository = Depends(get_repository),
     admin_payload: dict = Depends(get_admin_user)
-):
+) -> list[UserResponseDto]:
     """
-    Endpoint para listar todos os utilizadores.
+    Endpoint para listar todos os users.
     Acesso restrito a administradores.
     """
-    
-    print(f"Admin {admin_payload.get('username')} está a listar utilizadores.")
-    return [
-        {"id": "user-uuid-1", "name": "Utilizador Exemplo 1", "email": "user1@example.com"},
-        {"id": "user-uuid-2", "name": "Utilizador Exemplo 2", "email": "user2@example.com"},
-    ]
-
+    use_case = GetUsersListUsecase(_repo)
+    return await use_case.execute()
 
 @user_router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_user(
@@ -44,7 +40,7 @@ async def create_user(
     _admin_payload: dict = Depends(get_admin_user)
 ) -> UserResponseDto:
     """
-    Cria um novo utilizador.
+    Cria um novo user.
     Acesso restrito a administradores.
     """
     use_case = CreateUserUsecase(create_user_dto, repo)
@@ -59,8 +55,8 @@ async def update_user(
     _auth_payload: dict = Depends(check_admin_or_self) 
 ) -> UserResponseDto:
     """
-    Atualiza um utilizador.
-    Acesso permitido para administradores ou para o próprio utilizador.
+    Atualiza um user.
+    Acesso permitido para administradores ou para o próprio user.
     """
     use_case = UpdateUserUsecase(user_id, update_user_dto, repo)
     return await use_case.execute()
@@ -73,7 +69,7 @@ async def delete_user(
     _admin_payload: dict = Depends(get_admin_user)
 ) -> None:
     """
-    Apaga um utilizador.
+    Apaga um user.
     Acesso restrito a administradores.
     """
     use_case = DeleteUserUsecase(user_id, repo)
@@ -87,12 +83,12 @@ async def get_user_by_id(
     _auth_payload: dict = Depends(check_admin_or_self)
 ) -> UserResponseDto | None:
     """
-    Obtém um utilizador pelo seu ID.
-    Acesso permitido para administradores ou para o próprio utilizador.
+    Obtém um user pelo seu ID.
+    Acesso permitido para administradores ou para o próprio user.
     """
     use_case = GetUserByIdUsecase(user_id, repo)
     user = await use_case.execute()
     
     if not user:
-        raise HTTPException(status_code=404, detail="Utilizador não encontrado")
+        raise HTTPException(status_code=404, detail="User não encontrado")
     return user

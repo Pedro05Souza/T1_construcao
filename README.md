@@ -176,7 +176,7 @@ We will use the "Implicit Grant" flow (which we manually enabled in the console)
     Paste the complete link below into your browser. This link is already configured with your `client_id` and `response_type=token`.
 
     ```
-    [https://t1-app-construcao-seu-nome-123.auth.us-east-1.amazoncognito.com/oauth2/authorize?client_id=1a352jaf2oivk10s9smivf537s&response_type=token&scope=openid+email+profile&redirect_uri=http://localhost:8000/token](https://t1-app-construcao-seu-nome-123.auth.us-east-1.amazoncognito.com/oauth2/authorize?client_id=1a352jaf2oivk10s9smivf537s&response_type=token&scope=openid+email+profile&redirect_uri=http://localhost:8000/token)
+    https://app-construcao.auth.us-east-1.amazoncognito.com/oauth2/authorize?client_id=1a352jaf2oivk10s9smivf537s&response_type=token&scope=openid+email+profile&redirect_uri=http://localhost:8000/token
     ```
 
 2.  **Log In:**

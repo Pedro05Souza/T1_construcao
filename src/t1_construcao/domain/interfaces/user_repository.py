@@ -25,3 +25,7 @@ class UserRepository(Protocol):
     async def delete(self, user_id: str) -> None:
         """Delete a user by their ID."""
         ...
+    
+    async def get_all(self) -> list["UserEntity"]:
+        """Retrieve all users."""
+        ...
