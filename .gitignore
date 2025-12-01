@@ -191,5 +191,14 @@ logs/
 .terraform.lock.hcl
 terraform.*
 *.tfvars
+terraform.tfstate
+terraform.tfstate.backup
+
+# OpenAPI (generated file - can be regenerated)
+openapi.yaml
+
+# Test results
+test-results.xml
+coverage.xml
 
 

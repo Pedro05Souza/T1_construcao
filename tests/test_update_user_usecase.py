@@ -18,7 +18,9 @@ class TestUpdateUserUsecase:
         assert result.id == user_id
         assert result.name == update_user_dto.name
 
-        mock_repository.update.assert_called_once_with(user_id, update_user_dto.name)
+        mock_repository.update.assert_called_once_with(
+            user_id, name=update_user_dto.name, role=update_user_dto.role
+        )
 
     @pytest.mark.asyncio
     async def test_execute_updates_existing_user(self, mock_user_repository):
@@ -45,7 +47,7 @@ class TestUpdateUserUsecase:
         assert result.id == existing_user.id
         assert result.name == existing_user.name
         mock_repository.update.assert_called_once_with(
-            existing_user.id, existing_user.name
+            existing_user.id, name=existing_user.name, role=None
         )
 
     @pytest.mark.asyncio
@@ -58,7 +60,9 @@ class TestUpdateUserUsecase:
 
         assert result.id == existing_user.id
         assert result.name == ""
-        mock_repository.update.assert_called_once_with(existing_user.id, "")
+        mock_repository.update.assert_called_once_with(
+            existing_user.id, name="", role=None
+        )
 
     @pytest.mark.asyncio
     async def test_execute_with_special_characters(self, repository_with_user):
@@ -71,7 +75,9 @@ class TestUpdateUserUsecase:
 
         assert result.id == existing_user.id
         assert result.name == special_name
-        mock_repository.update.assert_called_once_with(existing_user.id, special_name)
+        mock_repository.update.assert_called_once_with(
+            existing_user.id, name=special_name, role=None
+        )
 
     @pytest.mark.asyncio
     async def test_execute_returns_correct_dto_structure(self, repository_with_user):

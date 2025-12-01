@@ -3,3 +3,15 @@ from .update_user_usecase import *
 from .delete_user_usecase import *
 from .get_user_by_id_usecase import *
 from .get_users_list import *
+from .create_service_usecase import *
+from .get_service_by_id_usecase import *
+from .get_services_list_usecase import *
+from .update_service_usecase import *
+from .delete_service_usecase import *
+from .create_appointment_usecase import *
+from .get_appointment_by_id_usecase import *
+from .get_appointments_list_usecase import *
+from .update_appointment_usecase import *
+from .delete_appointment_usecase import *
+from .confirm_appointment_usecase import *
+from .cancel_appointment_usecase import *

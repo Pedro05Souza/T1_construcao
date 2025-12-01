@@ -12,5 +12,7 @@ class CreateUserUsecase:
         self._user_repository = user_repository
 
     async def execute(self) -> UserResponseDto:
-        user_entity = await self._user_repository.create(self._create_user_dto.name)
+        user_entity = await self._user_repository.create(
+            self._create_user_dto.name, self._create_user_dto.role
+        )
         return to_user_dto(user_entity)

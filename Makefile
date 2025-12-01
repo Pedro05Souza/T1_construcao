@@ -38,6 +38,12 @@ db-migrate:
 	$(DOCKER_COMPOSE) exec backend poetry run aerich upgrade
 	@echo "$(GREEN)Migrations applied successfully!$(NC)"
 
+db-fix-migrations:
+	@echo "$(YELLOW)Fixing migration format...$(NC)"
+	@echo "$(BLUE)Note: This requires a running database with migrations applied$(NC)"
+	$(DOCKER_COMPOSE) exec backend poetry run aerich fix-migrations
+	@echo "$(GREEN)Migration format fixed!$(NC)"
+
 db-reset:
 	@echo "$(RED)WARNING: This will reset the database and delete all data!$(NC)"
 	@read -p "Are you sure? (y/N): " confirm && [ "$$confirm" = "y" ] || exit 1
@@ -65,6 +71,29 @@ test:
 	@echo "$(YELLOW)Running tests...$(NC)"
 	$(POETRY) run pytest
 	@echo "$(GREEN)Tests completed!$(NC)"
+
+test-db-up:
+	@echo "$(YELLOW)Starting test database...$(NC)"
+	$(DOCKER_COMPOSE) up -d test_db
+	@echo "$(BLUE)Waiting for test database to be ready...$(NC)"
+	@sleep 5
+	@echo "$(GREEN)Test database is ready!$(NC)"
+
+test-db-down:
+	@echo "$(YELLOW)Stopping test database...$(NC)"
+	$(DOCKER_COMPOSE) stop test_db
+	$(DOCKER_COMPOSE) rm -f test_db
+	@echo "$(GREEN)Test database stopped!$(NC)"
+
+test-integration: test-db-up ## Run integration tests with Docker test database
+	@echo "$(YELLOW)Running integration tests with Docker test database...$(NC)"
+	TEST_DATABASE_URL=postgres://postgres:postgres@localhost:5433/t1_construcao_test $(POETRY) run pytest -m integration
+	@echo "$(GREEN)Integration tests completed!$(NC)"
+
+test-all: test-db-up ## Run all tests (unit + integration) with Docker test database
+	@echo "$(YELLOW)Running all tests with Docker test database...$(NC)"
+	TEST_DATABASE_URL=postgres://postgres:postgres@localhost:5433/t1_construcao_test $(POETRY) run pytest
+	@echo "$(GREEN)All tests completed!$(NC)"
 
 test-verbose:
 	@echo "$(YELLOW)Running tests with verbose output...$(NC)"
@@ -147,4 +176,12 @@ all: build
 
 fresh-start: clean docker-build docker-run db-setup
 	@echo "$(GREEN)Fresh start complete!$(NC)"
+
+export-openapi:
+	@echo "$(YELLOW)Exporting OpenAPI schema to YAML...$(NC)"
+	@poetry run python scripts/export_openapi.py openapi.yaml || \
+	(echo "$(RED)PyYAML not installed. Installing...$(NC)" && \
+	 poetry add pyyaml --group dev && \
+	 poetry run python scripts/export_openapi.py openapi.yaml)
+	@echo "$(GREEN)OpenAPI schema exported to openapi.yaml$(NC)"
 

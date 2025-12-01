@@ -14,11 +14,11 @@ class TestUserAssembler:
 
     def test_to_user_dto_with_different_values(self):
         test_cases = [
-            UserEntity(id="1", name="John Doe"),
-            UserEntity(id="abc123", name="Jane Smith"),
-            UserEntity(id="999", name=""),
-            UserEntity(id="special-id", name="Special @#$ Characters"),
-            UserEntity(id="long-id-12345", name="A" * 100),
+            UserEntity(id="1", name="John Doe", role="client"),
+            UserEntity(id="abc123", name="Jane Smith", role="admin"),
+            UserEntity(id="999", name="", role="operator"),
+            UserEntity(id="special-id", name="Special @#$ Characters", role="client"),
+            UserEntity(id="long-id-12345", name="A" * 100, role="client"),
         ]
 
         for entity in test_cases:
@@ -27,9 +27,10 @@ class TestUserAssembler:
             assert isinstance(result, UserResponseDto)
             assert result.id == entity.id
             assert result.name == entity.name
+            assert result.role == entity.role
 
     def test_to_user_dto_preserves_data_types(self):
-        entity = UserEntity(id="123", name="Test User")
+        entity = UserEntity(id="123", name="Test User", role="client")
 
         result = to_user_dto(entity)
 
@@ -37,7 +38,7 @@ class TestUserAssembler:
         assert isinstance(result.name, str)
 
     def test_to_user_dto_with_empty_values(self):
-        entity = UserEntity(id="", name="")
+        entity = UserEntity(id="", name="", role="client")
 
         result = to_user_dto(entity)
 
@@ -45,12 +46,13 @@ class TestUserAssembler:
         assert result.name == ""
 
     def test_to_user_dto_structure_completeness(self):
-        entity = UserEntity(id="test-id", name="Test Name")
+        entity = UserEntity(id="test-id", name="Test Name", role="client")
 
         result = to_user_dto(entity)
 
         assert hasattr(result, "id")
         assert hasattr(result, "name")
-        expected_attrs = {"id", "name"}
+        assert hasattr(result, "role")
+        expected_attrs = {"id", "name", "role"}
         actual_attrs = set(result.__dict__.keys())
         assert actual_attrs == expected_attrs

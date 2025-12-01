@@ -16,7 +16,9 @@ class TestCreateUserUsecase:
         assert result.name == create_user_dto.name
         assert result.id == "1"
 
-        mock_user_repository.create.assert_called_once_with(create_user_dto.name)
+        mock_user_repository.create.assert_called_once_with(
+            create_user_dto.name, create_user_dto.role
+        )
 
     @pytest.mark.asyncio
     async def test_execute_repository_creates_user_with_correct_name(
@@ -28,7 +30,7 @@ class TestCreateUserUsecase:
 
         await usecase.execute()
 
-        mock_user_repository.create.assert_called_once_with(user_name)
+        mock_user_repository.create.assert_called_once_with(user_name, "client")
 
     @pytest.mark.asyncio
     async def test_execute_returns_correct_dto_structure(self, mock_user_repository):
@@ -51,7 +53,7 @@ class TestCreateUserUsecase:
         result = await usecase.execute()
 
         assert result.name == ""
-        mock_user_repository.create.assert_called_once_with("")
+        mock_user_repository.create.assert_called_once_with("", "client")
 
     @pytest.mark.asyncio
     async def test_execute_with_special_characters_in_name(self, mock_user_repository):
@@ -62,7 +64,7 @@ class TestCreateUserUsecase:
         result = await usecase.execute()
 
         assert result.name == special_name
-        mock_user_repository.create.assert_called_once_with(special_name)
+        mock_user_repository.create.assert_called_once_with(special_name, "client")
 
     @pytest.mark.asyncio
     async def test_execute_repository_exception_propagation(self, mock_user_repository):

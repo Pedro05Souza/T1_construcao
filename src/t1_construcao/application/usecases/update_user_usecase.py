@@ -19,6 +19,8 @@ class UpdateUserUsecase:
 
     async def execute(self) -> UserResponseDto:
         user_entity = await self._user_repository.update(
-            self._user_id, self._update_user_dto.name
+            self._user_id,
+            name=self._update_user_dto.name,
+            role=self._update_user_dto.role,
         )
         return to_user_dto(user_entity)

@@ -7,3 +7,4 @@ __all__ = ["UserEntity"]
 @dataclass
 class UserEntity(BaseEntity):
     name: str
+    role: str  # admin, operator, client

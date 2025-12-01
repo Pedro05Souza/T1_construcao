@@ -34,8 +34,11 @@ ENV PYTHONPATH="/app/src"
 
 COPY --from=builder /opt/poetry-venvs /opt/poetry-venvs
 COPY src/ ./src/
+COPY scripts/ ./scripts/
+COPY pyproject.toml poetry.lock* ./
 
-RUN chown -R appuser:appuser /app
+RUN chown -R appuser:appuser /app && \
+    chmod +x /app/scripts/*.py || true
 USER appuser
 
 EXPOSE 8000

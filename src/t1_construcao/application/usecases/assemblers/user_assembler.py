@@ -17,4 +17,5 @@ def to_user_dto(user_entity: UserEntity) -> UserResponseDto:
     return UserResponseDto(
         id=user_entity.id,
         name=user_entity.name,
+        role=user_entity.role,
     )

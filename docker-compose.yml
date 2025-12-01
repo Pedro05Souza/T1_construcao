@@ -1,12 +1,57 @@
 services:
+  db:
+    image: postgres:15-alpine
+    container_name: t1_db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-t1_construcao}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
   backend:
     container_name: backend
     build: .
-    command: poetry run fastapi dev src/t1_construcao/main.py --host 0.0.0.0
+    command: sh -c "poetry run python scripts/wait_for_db.py && (poetry run aerich init-db || true) && poetry run aerich upgrade && poetry run fastapi dev src/t1_construcao/main.py --host 0.0.0.0"
     volumes:
       - .:/app
     ports:
       - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
     restart: on-failure:3
     env_file:
       - .env
+    environment:
+      - DATABASE_URL=postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-t1_construcao}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_DB=${POSTGRES_DB:-t1_construcao}
+
+  test_db:
+    image: postgres:15-alpine
+    container_name: t1_test_db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-t1_construcao_test}
+    ports:
+      - "${POSTGRES_TEST_PORT:-5433}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: "no"
+
+volumes:
+  postgres_data:
